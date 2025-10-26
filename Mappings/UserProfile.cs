@@ -1,0 +1,18 @@
+﻿using AutoMapper;
+using CarRentalWebApplication.Models;
+using CarRentalWebApplication.Areas.Identity.Pages.Account;
+
+namespace CarRentalWebApplication.Mappings
+{
+    public class UserProfile : Profile
+    {
+        public UserProfile()
+        {
+            CreateMap<RegisterModel.InputModel, User>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.NormalizedUserName, opt => opt.MapFrom(src => src.Email.ToUpperInvariant()))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpperInvariant()));
+        }
+    }
+}
