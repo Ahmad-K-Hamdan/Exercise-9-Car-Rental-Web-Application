@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using CarRentalWebApplication.Models;
 using CarRentalWebApplication.Areas.Identity.Pages.Account;
+using CarRentalWebApplication.Areas.Identity.Pages.Account.Manage;
+using CarRentalWebApplication.Models;
 
 namespace CarRentalWebApplication.Mappings
 {
@@ -13,6 +14,7 @@ namespace CarRentalWebApplication.Mappings
                 .ForMember(dest => dest.NormalizedUserName, opt => opt.MapFrom(src => src.Email.ToUpperInvariant()))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.NormalizedEmail, opt => opt.MapFrom(src => src.Email.ToUpperInvariant()));
+            CreateMap<IndexModel.InputModel, User>().ReverseMap();
         }
     }
 }
