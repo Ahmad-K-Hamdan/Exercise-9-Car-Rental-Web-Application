@@ -1,4 +1,4 @@
-using _9._Car_Rental_Web_Application.Data;
+using CarRentalWebApplication.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

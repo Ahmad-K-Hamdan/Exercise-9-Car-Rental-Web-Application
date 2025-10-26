@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using _9._Car_Rental_Web_Application.Models;
+using CarRentalWebApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace _9._Car_Rental_Web_Application.Controllers
+namespace CarRentalWebApplication.Controllers
 {
     public class HomeController : Controller
     {
