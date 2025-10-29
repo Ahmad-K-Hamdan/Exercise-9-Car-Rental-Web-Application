@@ -2,7 +2,7 @@
 
 namespace CarRentalWebApplication.Controllers
 {
-    public class HomeController : Controller
+    public class BookingHistoryController : Controller
     {
         public IActionResult Index()
         {
