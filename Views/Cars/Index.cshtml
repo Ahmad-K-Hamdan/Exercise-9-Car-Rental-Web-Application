@@ -1,7 +1,64 @@
-﻿@{
+﻿@model IEnumerable<CarRentalWebApplication.Models.Car>
+
+@{
     ViewData["Title"] = "Available Cars";
+    var currentSort = Context.Request.Query["sortBy"].ToString()?.ToLower() ?? "";
 }
 
-<div class="text-center">
-    <h1 class="display-4">All Available Cars</h1>
+<div class="container mt-4">
+    <h1 class="text-center mb-5 fw-bold">Available Cars</h1>
+
+    <form asp-controller="Cars" asp-action="Index" method="get" class="d-flex justify-content-center align-items-center flex-wrap mb-4 gap-3">
+        <label class="fw-semibold mb-0">Order by:</label>
+        <div class="btn-group" role="group" aria-label="Sort options">
+            <input type="radio" class="btn-check" name="sortBy" id="sortByMake" value="make"
+                   @(currentSort == "make" ? "checked" : "") onchange="this.form.submit()">
+            <label class="btn btn-outline-primary" for="sortByMake">Make</label>
+
+            <input type="radio" class="btn-check" name="sortBy" id="sortByModel" value="model"
+                   @(currentSort == "model" ? "checked" : "") onchange="this.form.submit()">
+            <label class="btn btn-outline-primary" for="sortByModel">Model</label>
+
+            <input type="radio" class="btn-check" name="sortBy" id="sortByYear" value="year"
+                   @(currentSort == "year" ? "checked" : "") onchange="this.form.submit()">
+            <label class="btn btn-outline-primary" for="sortByYear">Year</label>
+
+            <input type="radio" class="btn-check" name="sortBy" id="sortByRate" value="rate"
+                   @(currentSort == "rate" ? "checked" : "") onchange="this.form.submit()">
+            <label class="btn btn-outline-primary" for="sortByRate">Rate</label>
+        </div>
+
+        <a asp-controller="Cars" asp-action="Index" class="btn btn-secondary ms-2">
+            Clear
+        </a>
+    </form>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center mt-5">
+            <h4 class="text-muted">Sorry, there are no cars available at the moment.</h4>
+            <p>Please check back later or contact support for more information.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            @foreach (var car in Model)
+            {
+                <div class="col">
+                    <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.CarId" class="text-decoration-none text-dark">
+                        <div class="card shadow-sm h-100 border-0">
+                            <img src="@car.ImageUrl" class="card-img-top" alt="@($"{car.Make} {car.Model}")"
+                                 style="height: 200px; object-fit: cover;" />
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-semibold">@car.Make @car.Model</h5>
+                                <p class="text-muted mb-1">@car.Year • @car.Color</p>
+                                <p class="fw-bold text-primary mb-3">$@car.DailyRate / day</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
 </div>

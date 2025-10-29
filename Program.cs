@@ -1,5 +1,7 @@
 using CarRentalWebApplication.Data;
 using CarRentalWebApplication.Models;
+using CarRentalWebApplication.Repositories;
+using CarRentalWebApplication.Repositories.Interfaces;
 using CarRentalWebApplication.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -25,6 +27,7 @@ builder.Services.AddDefaultIdentity<User>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.AddScoped<ICarRepository, CarRepository>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();
