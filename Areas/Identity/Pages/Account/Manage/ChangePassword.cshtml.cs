@@ -10,16 +10,13 @@ namespace CarRentalWebApplication.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly ILogger<ChangePasswordModel> _logger;
 
         public ChangePasswordModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            ILogger<ChangePasswordModel> logger)
+            SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = logger;
         }
 
         [BindProperty]
@@ -33,29 +30,33 @@ namespace CarRentalWebApplication.Areas.Identity.Pages.Account.Manage
             [Required]
             [DataType(DataType.Password)]
             [Display(Name = "Current Password")]
-            public string OldPassword { get; set; }
+            public string OldPassword { get; set; } = null!;
 
             [Required]
             [StringLength(100, ErrorMessage = "The password must be between {2} and {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "New Password")]
-            public string NewPassword { get; set; }
+            public string NewPassword { get; set; } = null!;
 
             [DataType(DataType.Password)]
             [Display(Name = "Confirm New Password")]
             [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
+            public string ConfirmPassword { get; set; } = null!;
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
+            {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
 
             var hasPassword = await _userManager.HasPasswordAsync(user);
             if (!hasPassword)
+            {
                 return RedirectToPage("./SetPassword");
+            }
 
             return Page();
         }
@@ -63,25 +64,29 @@ namespace CarRentalWebApplication.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
+            {
                 return Page();
+            }
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
+            {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
                 foreach (var error in changePasswordResult.Errors)
+                {
                     ModelState.AddModelError(string.Empty, error.Description);
+                }
 
                 return Page();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("User changed their password successfully.");
             StatusMessage = "Your password has been changed.";
-
             return RedirectToPage();
         }
     }

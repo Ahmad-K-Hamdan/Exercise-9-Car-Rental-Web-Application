@@ -1,8 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
-using CarRentalWebApplication.Models;
+﻿using CarRentalWebApplication.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,26 +8,16 @@ namespace CarRentalWebApplication.Areas.Identity.Pages.Account
     public class LogoutModel : PageModel
     {
         private readonly SignInManager<User> _signInManager;
-        private readonly ILogger<LogoutModel> _logger;
 
-        public LogoutModel(SignInManager<User> signInManager, ILogger<LogoutModel> logger)
+        public LogoutModel(SignInManager<User> signInManager)
         {
             _signInManager = signInManager;
-            _logger = logger;
         }
 
-        public async Task<IActionResult> OnPost(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
-            if (returnUrl != null)
-            {
-                return LocalRedirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToPage("/Index");
-            }
+            return RedirectToPage("/Account/Login", new { area = "Identity" });
         }
     }
 }

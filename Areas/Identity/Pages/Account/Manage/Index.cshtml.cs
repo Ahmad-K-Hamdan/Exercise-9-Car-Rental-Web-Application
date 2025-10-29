@@ -75,7 +75,7 @@ namespace CarRentalWebApplication.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            Username = user.UserName;
+            Username = user.UserName!;
             Input = _mapper.Map<InputModel>(user);
             return Page();
         }
