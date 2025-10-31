@@ -1,18 +1,16 @@
 ﻿@model IEnumerable<CarRentalWebApplication.Models.Rental>
 
 @{
-    ViewData["Title"] = "Reservations";
-    bool IsOverdue(DateTime start, DateTime returnDate, bool isReturned)
-        => !isReturned && DateTime.Today > returnDate.Date;
+    ViewData["Title"] = "Booking History";
 }
 
 <div class="container mt-4">
-    <h2 class="fw-bold mb-4 text-center">My Reservations</h2>
+    <h2 class="fw-bold mb-4 text-center">My Booking History</h2>
 
     @if (Model == null || !Model.Any())
     {
         <div class="alert alert-info text-center">
-            You don’t have any active reservations yet.
+            You don’t have any completed reservations yet.
         </div>
     }
     else
@@ -26,20 +24,21 @@
                         <th>Period</th>
                         <th>Duration</th>
                         <th>Total Price</th>
+                        <th>Returned On</th>
+                        <th>Payment</th>
                         <th>Status</th>
-                        <th style="width: 1%"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @{
                         int index = 0;
                     }
-
                     @foreach (var r in Model)
                     {
-                        var overdue = IsOverdue(r.StartDate, r.ReturnDate, r.IsReturned);
+                        bool isLate = r.ActualReturnDate.HasValue &&
+                        r.ActualReturnDate.Value.Date > r.ReturnDate.Date;
 
-                        <tr class="@(overdue ? "table-danger" : "")">
+                        <tr class="@(isLate ? "table-warning" : "")">
                             <td>@(++index)</td>
                             <td>
                                 <div class="fw-semibold">@r.Car?.Make @r.Car?.Model</div>
@@ -52,25 +51,18 @@
                             <td>@r.DurationDays day(s)</td>
                             <td>$@r.TotalPrice</td>
                             <td>
-                                @if (overdue)
+                                @(r.ActualReturnDate?.ToShortDateString() ?? "—")
+                            </td>
+                            <td>@r.PaymentType</td>
+                            <td>
+                                @if (isLate)
                                 {
-                                    <span class="badge bg-danger">Overdue</span>
+                                    <span class="badge bg-warning text-dark">Returned Late</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-success">Active</span>
+                                    <span class="badge bg-success">On Time</span>
                                 }
-                            </td>
-                            <td>
-                                <form asp-action="Return" asp-controller="Reservations" method="post" class="m-0">
-                                    <input type="hidden" name="id" value="@r.RentalId" />
-                                    <button type="submit"
-                                            class="btn btn-sm @(r.IsReturned ? "btn-outline-secondary" : "btn-outline-danger")"
-                                            @(r.IsReturned ? "disabled" : "")>
-                                        Return
-                                    </button>
-                                    @Html.AntiForgeryToken()
-                                </form>
                             </td>
                         </tr>
                     }

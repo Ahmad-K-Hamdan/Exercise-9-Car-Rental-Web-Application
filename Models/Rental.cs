@@ -32,6 +32,9 @@ namespace CarRentalWebApplication.Models
         [DataType(DataType.Date)]
         public DateTime ReturnDate { get; set; }
 
+        [DataType(DataType.Date)]
+        public DateTime? ActualReturnDate { get; set; }
+
         [Required]
         [Column(TypeName = "int")]
         public int DurationDays { get; set; }

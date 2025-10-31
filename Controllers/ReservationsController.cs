@@ -46,6 +46,32 @@ namespace CarRentalWebApplication.Controllers
             return View(rental);
         }
 
+        public async Task<IActionResult> Index()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("You must be logged in to reserve a car.");
+            }
+
+            var rentals = await _reservationRepository.GetByUserAsync(userId, true);
+            return View(rentals);
+        }
+
+        public async Task<IActionResult> History()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException("You must be logged in to reserve a car.");
+            }
+
+            var rentals = await _reservationRepository.GetByUserAsync(userId, false);
+            return View(rentals);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(Rental rental, DateTime returnDate)
         {
@@ -82,6 +108,7 @@ namespace CarRentalWebApplication.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Return(int id)
         {
             await _reservationRepository.ReturnCarAsync(id);

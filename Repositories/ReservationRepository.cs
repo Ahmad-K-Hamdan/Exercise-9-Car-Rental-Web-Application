@@ -31,6 +31,16 @@ namespace CarRentalWebApplication.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Rental>> GetByUserAsync(string userId, bool activeStatus)
+        {
+            return await _context.Rentals
+                .Include(r => r.Car)
+                .Include(r => r.User)
+                .Where(r => r.UserId == userId)
+                .Where(r => r.IsActive == activeStatus)
+                .ToListAsync();
+        }
+
         public async Task<Rental> CreateAsync(Rental rental)
         {
             var car = await _context.Cars.FirstOrDefaultAsync(c => c.CarId == rental.CarId);
@@ -67,6 +77,7 @@ namespace CarRentalWebApplication.Repositories
 
             rental.IsReturned = true;
             rental.IsActive = false;
+            rental.ActualReturnDate = DateTime.Today;
             rental.Car.Available = true;
 
             _context.Update(rental);
