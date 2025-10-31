@@ -1,4 +1,5 @@
-﻿using CarRentalWebApplication.Repositories.Interfaces;
+﻿using CarRentalWebApplication.Models;
+using CarRentalWebApplication.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalWebApplication.Controllers
@@ -12,9 +13,19 @@ namespace CarRentalWebApplication.Controllers
             _carRepository = carRepository;
         }
 
-        public async Task<IActionResult> Index(string sortBy, bool onlyAvailable = true)
+        public async Task<IActionResult> Index(string sortBy, string searchQuery, bool onlyAvailable = true)
         {
-            return View(await _carRepository.GetAllCarsAsync(sortBy, onlyAvailable));
+            var cars = await _carRepository.GetAllCarsAsync(sortBy, searchQuery, true);
+
+            ViewData["CurrentSort"] = sortBy;
+            ViewData["SearchQuery"] = searchQuery;
+
+            if (HttpContext.Request.Headers.XRequestedWith == "XMLHttpRequest")
+            {
+                return View("_CarCard", cars);
+            }
+
+            return View(cars);
         }
 
         public async Task<IActionResult> Details(int id)

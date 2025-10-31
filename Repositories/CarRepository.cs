@@ -14,13 +14,23 @@ namespace CarRentalWebApplication.Repositories
             _applicationDbContext = applicationDbContext;
         }
 
-        public async Task<IEnumerable<Car>> GetAllCarsAsync(string sortBy, bool onlyAvailable)
+        public async Task<IEnumerable<Car>> GetAllCarsAsync(string sortBy, string searchQuery, bool onlyAvailable)
         {
             IQueryable<Car> query = _applicationDbContext.Cars;
 
             if (onlyAvailable)
             {
                 query = query.Where(c => c.Available == true);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.ToLower();
+                query = query.Where(c =>
+                        c.Make.Contains(searchQuery) ||
+                        c.Model.Contains(searchQuery) ||
+                        c.Color != null && c.Color.Contains(searchQuery) ||
+                        c.Description != null && c.Description.Contains(searchQuery));
             }
 
             query = sortBy?.ToLower() switch
@@ -36,13 +46,5 @@ namespace CarRentalWebApplication.Repositories
         }
 
         public async Task<Car?> GetCarByIdAsync(int carId) => await _applicationDbContext.Cars.FirstOrDefaultAsync(c => c.CarId == carId);
-
-        public async Task<IEnumerable<Car>> SearchCarsAsync(string searchQuery) => await _applicationDbContext.Cars
-            .Where(c =>
-                c.Make.Contains(searchQuery) ||
-                c.Model.Contains(searchQuery) ||
-                c.Color!.Contains(searchQuery) ||
-                c.Description!.Contains(searchQuery))
-            .ToListAsync();
     }
 }

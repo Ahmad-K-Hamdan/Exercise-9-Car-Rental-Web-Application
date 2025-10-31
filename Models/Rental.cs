@@ -29,8 +29,14 @@ namespace CarRentalWebApplication.Models
         public TimeSpan StartTime { get; set; }
 
         [Required]
-        public TimeSpan Duration { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime ReturnDate { get; set; }
 
+        [Required]
+        [Column(TypeName = "int")]
+        public int DurationDays { get; set; }
+
+        [Required]
         [StringLength(30)]
         public string PaymentType { get; set; } = null!;
 
