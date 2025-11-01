@@ -106,6 +106,7 @@ namespace CarRentalWebApplication.Areas.Identity.Pages.Account
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(user, "Customer");
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 return LocalRedirect(returnUrl);
             }

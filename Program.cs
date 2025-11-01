@@ -12,13 +12,13 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<User>(options =>
 {
@@ -28,16 +28,29 @@ builder.Services.AddDefaultIdentity<User>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddAutoMapper(typeof(Program));
-
 builder.Services.AddScoped<ICarRepository, CarRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+    string[] roles = { "Admin", "Customer" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -61,39 +74,33 @@ app.UseExceptionHandler(appError =>
         }
 
         var exception = exceptionFeature.Error;
-
-        object response;
-
-        switch (exception)
+        var (status, message) = exception switch
         {
-            case NotFoundException notFound:
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-                response = new { error = notFound.Message };
-                break;
+            NotFoundException ex => (StatusCodes.Status404NotFound, ex.Message),
+            _ => (StatusCodes.Status500InternalServerError, exception.Message)
+        };
 
-            default:
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                response = new { error = exception.Message };
-                break;
-        }
-
-        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        context.Response.StatusCode = status;
+        await context.Response.WriteAsync(JsonSerializer.Serialize(new { error = message }));
     });
 });
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-app.MapRazorPages()
-   .WithStaticAssets();
+app.MapRazorPages().WithStaticAssets();
 
 app.Run();
