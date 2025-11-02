@@ -1,0 +1,80 @@
+﻿@model IEnumerable<CarRentalWebApplication.Models.Car>
+
+@{
+    ViewData["Title"] = "Manage Cars";
+    var currentSort = ViewData["CurrentSort"]?.ToString() ?? "";
+    var currentSearch = ViewData["SearchQuery"]?.ToString() ?? "";
+    var currentFilter = ViewData["StatusFilter"]?.ToString() ?? "all";
+}
+
+<div class="container-fluid mt-4">
+    <div class="mx-auto" style="max-width: 1400px;">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h2 class="fw-bold mb-0">Car Management</h2>
+            <a asp-action="Add" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Add New Car
+            </a>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <!-- Search bar aligned to the left -->
+            <div class="flex-grow-1" style="max-width: 350px;">
+                <input id="searchBox" type="text" class="form-control"
+                       placeholder="Search cars..." value="@currentSearch" />
+            </div>
+
+            <!-- Filters grouped together on the right -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <select id="statusFilter" class="form-select" style="width: 160px;">
+                    <option value="all" selected="@(currentFilter == "all")">All Cars</option>
+                    <option value="available" selected="@(currentFilter == "available")">Available</option>
+                    <option value="rented" selected="@(currentFilter == "rented")">Rented</option>
+                    <option value="hidden" selected="@(currentFilter == "hidden")">Hidden</option>
+                </select>
+
+                <select id="sortSelect" class="form-select" style="width: 160px;">
+                    <option value="">Sort by...</option>
+                    <option value="make" selected="@(currentSort == "make")">Make</option>
+                    <option value="model" selected="@(currentSort == "model")">Model</option>
+                    <option value="year" selected="@(currentSort == "year")">Year</option>
+                    <option value="rate" selected="@(currentSort == "rate")">Rate</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="carTableContainer">
+            @await Html.PartialAsync("_AdminCarTable", Model)
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateCars() {
+            const query = $("#searchBox").val();
+            const sortBy = $("#sortSelect").val();
+            const status = $("#statusFilter").val();
+
+            $.ajax({
+                url: '/Cars/Admin',
+                type: 'GET',
+                data: { searchQuery: query, sortBy: sortBy, statusFilter: status },
+                success: function (result) {
+                    $("#carTableContainer").html(result);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            let timer;
+            $("#searchBox").on("keyup", function () {
+                clearTimeout(timer);
+                timer = setTimeout(updateCars, 300);
+            });
+
+            $("#sortSelect").on("change", updateCars);
+            $("#statusFilter").on("change", updateCars);
+        });
+    </script>
+}

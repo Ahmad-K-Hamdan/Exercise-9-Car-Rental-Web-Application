@@ -30,7 +30,7 @@ namespace CarRentalWebApplication.Controllers
                 throw new KeyNotFoundException("Car not found.");
             }
 
-            if (!car.Available)
+            if (!car.IsAvailable)
             {
                 throw new InvalidOperationException("Car is not available for reservation.");
             }

@@ -36,7 +36,8 @@ namespace CarRentalWebApplication.Models
         [Column(TypeName = "decimal(10, 2)")]
         public decimal DailyRate { get; set; }
 
-        public bool Available { get; set; } = true;
+        public bool IsAvailable { get; set; } = true;
+        public bool IsVisible { get; set; } = true;
 
         [StringLength(255)]
         public string? ImageUrl { get; set; }

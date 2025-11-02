@@ -50,7 +50,7 @@ namespace CarRentalWebApplication.Repositories
                 throw new NotFoundException("Car not found.");
             }
 
-            if (!car.Available)
+            if (!car.IsAvailable)
             {
                 throw new InvalidOperationException("Car is not available for reservation.");
             }
@@ -59,7 +59,7 @@ namespace CarRentalWebApplication.Repositories
             rental.TotalPrice = rental.DurationDays * car.DailyRate;
             await _context.Rentals.AddAsync(rental);
 
-            car.Available = false;
+            car.IsAvailable = false;
             _context.Cars.Update(car);
 
             await _context.SaveChangesAsync();
@@ -78,7 +78,7 @@ namespace CarRentalWebApplication.Repositories
             rental.IsReturned = true;
             rental.IsActive = false;
             rental.ActualReturnDate = DateTime.Today;
-            rental.Car.Available = true;
+            rental.Car.IsAvailable = true;
 
             _context.Update(rental);
             await _context.SaveChangesAsync();
