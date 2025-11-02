@@ -1,48 +1,156 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using CarRentalWebApplication.Models
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - _9._Car_Rental_Web_Application</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - Hamdan's Car Rental</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/_9._Car_Rental_Web_Application.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CarRentalWebApplication.styles.css" asp-append-version="true" />
+
+    <style>
+        .navbar {
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 0.3px;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            transition: color 0.2s ease, background-color 0.2s ease;
+        }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                background-color: #f1f1f1;
+                color: #0d6efd !important;
+            }
+    </style>
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">_9._Car_Rental_Web_Application</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-light mb-3">
+            <div class="container-fluid px-4">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    if (User.IsInRole("Admin"))
+                    {
+                        <a class="navbar-brand text-primary" asp-controller="AdminCars" asp-action="Index">
+                            <i class="bi bi-car-front-fill me-2"></i>Hamdan's Car Rental
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="navbar-brand text-primary" asp-controller="Cars" asp-action="Index">
+                            <i class="bi bi-car-front-fill me-2"></i>Hamdan's Car Rental
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a class="navbar-brand text-primary" asp-controller="Cars" asp-action="Index">
+                        <i class="bi bi-car-front-fill me-2"></i>Hamdan's Car Rental
+                    </a>
+                }
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            if (User.IsInRole("Admin"))
+                            {
+                                <!-- Admin Navigation -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminCars" ? "active" : "")"
+                                       asp-controller="AdminCars" asp-action="Index">
+                                        <i class="bi bi-car-front me-1"></i> Manage Cars
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminUsers" ? "active" : "")"
+                                       asp-controller="AdminUsers" asp-action="Index">
+                                        <i class="bi bi-people me-1"></i> Manage Users
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminReservations" ? "active" : "")"
+                                       asp-controller="AdminReservations" asp-action="Index">
+                                        <i class="bi bi-journal-text me-1"></i> Manage Reservations
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <!-- Customer Navigation -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cars" ? "active" : "")"
+                                       asp-controller="Cars" asp-action="Index">
+                                        <i class="bi bi-car-front me-1"></i> Available Cars
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Reservations" && ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")"
+                                       asp-controller="Reservations" asp-action="Index">
+                                        <i class="bi bi-bookmark-check me-1"></i> Reservations
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Reservations" && ViewContext.RouteData.Values["Action"]?.ToString() == "History" ? "active" : "")"
+                                       asp-controller="Reservations" asp-action="History">
+                                        <i class="bi bi-clock-history me-1"></i> Booking History
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <!-- Guest Navigation -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cars" ? "active" : "")"
+                                   asp-controller="Cars" asp-action="Index">
+                                    <i class="bi bi-car-front me-1"></i> Available Cars
+                                </a>
+                            </li>
+                        }
                     </ul>
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container-fluid">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - _9._Car_Rental_Web_Application - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

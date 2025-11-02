@@ -1,0 +1,29 @@
+﻿@model CarRentalWebApplication.Models.Car
+
+@{
+    ViewData["Title"] = $"{Model.Make} {Model.Model} Details";
+}
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="fw-bold mb-4">@Model.Make @Model.Model (@Model.Year)</h1>
+
+        <img src="@Model.ImageUrl" alt="@($"{Model.Make} {Model.Model}")"
+             class="img-fluid rounded shadow mb-4"
+             style="max-height: 400px; object-fit: cover;" />
+
+        <p class="text-muted mb-2">@Model.Color • @Model.FuelType • @Model.Transmission</p>
+        <p class="fs-5 mb-3">@Model.Description</p>
+        <p class="fw-bold text-primary fs-4 mb-4">$@Model.DailyRate / day</p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Cars" asp-action="Index" class="btn btn-outline-secondary px-4">
+                Back to Cars
+            </a>
+            <a asp-controller="Reservations" asp-action="Create" asp-route-carId="@Model.CarId"
+               class="btn btn-primary px-4">
+                Reserve Now
+            </a>
+        </div>
+    </div>
+</div>

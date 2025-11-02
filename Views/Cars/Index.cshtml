@@ -1,0 +1,63 @@
+﻿@model IEnumerable<CarRentalWebApplication.Models.Car>
+
+@{
+    ViewData["Title"] = "Available Cars";
+    var currentSort = Context.Request.Query["sortBy"].ToString()?.ToLower() ?? "";
+    var currentSearch = Context.Request.Query["searchQuery"].ToString() ?? "";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4 fw-bold">Available Cars</h1>
+
+    <div class="d-flex justify-content-center align-items-center flex-wrap mb-4 gap-3">
+        <input id="searchBox" type="text" class="form-control" style="width: 250px;"
+               placeholder="Search cars..." value="@currentSearch" />
+
+        <select id="sortSelect" class="form-select" style="width: 200px;">
+            <option value="">Sort by...</option>
+            <option value="make" selected="@(currentSort == "make")">Make</option>
+            <option value="model" selected="@(currentSort == "model")">Model</option>
+            <option value="year" selected="@(currentSort == "year")">Year</option>
+            <option value="rate" selected="@(currentSort == "rate")">Daily Rate</option>
+        </select>
+    </div>
+
+    <div id="carList">
+        <partial name="_CarCard" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateCars() {
+            const query = $("#searchBox").val();
+            const sort = $("#sortSelect").val();
+
+            $.ajax({
+                url: '/Cars/Index',
+                type: 'GET',
+                data: { searchQuery: query, sortBy: sort },
+                success: function (result) {
+                    if (result.trim().length === 0) {
+                        $("#carList").html("");
+                        $("#noResults").show();
+                    } else {
+                        $("#carList").html(result);
+                        $("#noResults").hide();
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            let timer;
+
+            $("#searchBox").on("keyup", function () {
+                clearTimeout(timer);
+                timer = setTimeout(updateCars, 300);
+            });
+
+            $("#sortSelect").on("change", updateCars);
+        });
+    </script>
+}

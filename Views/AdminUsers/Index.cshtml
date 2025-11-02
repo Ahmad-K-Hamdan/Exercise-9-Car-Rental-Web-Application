@@ -1,0 +1,70 @@
+﻿@model IEnumerable<(CarRentalWebApplication.Models.User user, IList<string> roles)>
+
+@{
+    ViewData["Title"] = "Manage Users";
+    var currentSearch = ViewData["SearchQuery"]?.ToString() ?? "";
+    var currentRoleFilter = ViewData["RoleFilter"]?.ToString() ?? "all";
+}
+
+<div class="container-fluid mt-4">
+    <div class="mx-auto" style="max-width: 1200px;">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h2 class="fw-bold mb-0">User Management</h2>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div class="flex-grow-1" style="max-width: 350px;">
+                <input id="searchBox" type="text" class="form-control"
+                       placeholder="Search users by name or email..." value="@currentSearch" />
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <select id="roleFilter" class="form-select" style="width: 160px;">
+                    <option value="all" selected="@(currentRoleFilter == "all")">All Users</option>
+                    <option value="admin" selected="@(currentRoleFilter == "admin")">Admins</option>
+                    <option value="customer" selected="@(currentRoleFilter == "customer")">Customers</option>
+                </select>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div id="userTableContainer">
+            @await Html.PartialAsync("_UserTable", Model)
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateUsers() {
+            const query = $("#searchBox").val();
+            const role = $("#roleFilter").val();
+
+            $.ajax({
+                url: '/AdminUsers',
+                type: 'GET',
+                data: { searchQuery: query, roleFilter: role },
+                success: function (result) {
+                    $("#userTableContainer").html(result);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            let timer;
+            $("#searchBox").on("keyup", function () {
+                clearTimeout(timer);
+                timer = setTimeout(updateUsers, 300);
+            });
+
+            $("#roleFilter").on("change", updateUsers);
+        });
+    </script>
+}

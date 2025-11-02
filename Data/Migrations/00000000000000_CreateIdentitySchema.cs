@@ -1,8 +1,7 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace _9._Car_Rental_Web_Application.Data.Migrations
+namespace CarRentalWebApplication.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {
