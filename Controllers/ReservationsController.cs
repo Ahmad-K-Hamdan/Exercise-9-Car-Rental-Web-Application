@@ -1,10 +1,7 @@
-﻿using CarRentalWebApplication.Data;
-using CarRentalWebApplication.Models;
-using CarRentalWebApplication.Repositories;
+﻿using CarRentalWebApplication.Models;
 using CarRentalWebApplication.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CarRentalWebApplication.Controllers

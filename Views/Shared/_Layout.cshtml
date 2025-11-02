@@ -16,7 +16,11 @@
     <link rel="stylesheet" href="~/CarRentalWebApplication.styles.css" asp-append-version="true" />
 
     <style>
-        /* --- Navbar polish --- */
+        .navbar {
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
         .navbar-brand {
             font-weight: 700;
             font-size: 1.25rem;
@@ -25,9 +29,9 @@
 
         .navbar-nav .nav-link {
             font-weight: 500;
-            transition: color 0.2s ease, background-color 0.2s ease;
             border-radius: 6px;
             padding: 0.5rem 1rem;
+            transition: color 0.2s ease, background-color 0.2s ease;
         }
 
             .navbar-nav .nav-link:hover,
@@ -35,11 +39,6 @@
                 background-color: #f1f1f1;
                 color: #0d6efd !important;
             }
-
-        .navbar {
-            background: #fff;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-        }
     </style>
 </head>
 
@@ -47,9 +46,27 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light mb-3">
             <div class="container-fluid px-4">
-                <a class="navbar-brand text-primary" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-car-front-fill me-2"></i>Hamdan's Car Rental
-                </a>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    if (User.IsInRole("Admin"))
+                    {
+                        <a class="navbar-brand text-primary" asp-controller="AdminCars" asp-action="Index">
+                            <i class="bi bi-car-front-fill me-2"></i>Hamdan's Car Rental
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="navbar-brand text-primary" asp-controller="Cars" asp-action="Index">
+                            <i class="bi bi-car-front-fill me-2"></i>Hamdan's Car Rental
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a class="navbar-brand text-primary" asp-controller="Cars" asp-action="Index">
+                        <i class="bi bi-car-front-fill me-2"></i>Hamdan's Car Rental
+                    </a>
+                }
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                         aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,13 +75,6 @@
 
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <!-- Home (Visible to all) -->
-                        <li class="nav-item">
-                            <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
-                               asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house-door me-1"></i> Home
-                            </a>
-                        </li>
 
                         @if (SignInManager.IsSignedIn(User))
                         {
@@ -72,23 +82,23 @@
                             {
                                 <!-- Admin Navigation -->
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cars" ? "active" : "")"
-                                       asp-controller="Cars" asp-action="Admin">
-                                        <i class="bi bi-tools me-1"></i> Manage Cars
+                                    <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminCars" ? "active" : "")"
+                                       asp-controller="AdminCars" asp-action="Index">
+                                        <i class="bi bi-car-front me-1"></i> Manage Cars
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
                                     <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminUsers" ? "active" : "")"
                                        asp-controller="AdminUsers" asp-action="Index">
-                                        <i class="bi bi-people-fill me-1"></i> Manage Users
+                                        <i class="bi bi-people me-1"></i> Manage Users
                                     </a>
                                 </li>
 
                                 <li class="nav-item">
                                     <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminReservations" ? "active" : "")"
                                        asp-controller="AdminReservations" asp-action="Index">
-                                        <i class="bi bi-calendar-check me-1"></i> Manage Reservations
+                                        <i class="bi bi-journal-text me-1"></i> Manage Reservations
                                     </a>
                                 </li>
                             }
@@ -121,7 +131,8 @@
                         {
                             <!-- Guest Navigation -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Cars" asp-action="Index">
+                                <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cars" ? "active" : "")"
+                                   asp-controller="Cars" asp-action="Index">
                                     <i class="bi bi-car-front me-1"></i> Available Cars
                                 </a>
                             </li>

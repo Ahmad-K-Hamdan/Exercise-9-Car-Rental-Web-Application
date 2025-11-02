@@ -2,9 +2,7 @@
 using CarRentalWebApplication.Exceptions;
 using CarRentalWebApplication.Models;
 using CarRentalWebApplication.Repositories.Interfaces;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CarRentalWebApplication.Repositories
 {

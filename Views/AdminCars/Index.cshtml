@@ -57,7 +57,7 @@
             const status = $("#statusFilter").val();
 
             $.ajax({
-                url: '/Cars/Admin',
+                url: '/AdminCars',
                 type: 'GET',
                 data: { searchQuery: query, sortBy: sortBy, statusFilter: status },
                 success: function (result) {
