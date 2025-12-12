@@ -1,0 +1,84 @@
+﻿@model IEnumerable<CarRentalWebApplication.Models.Rental>
+
+@{
+    ViewData["Title"] = "Reservations";
+    bool IsOverdue(DateTime start, DateTime returnDate, bool isReturned)
+        => !isReturned && DateTime.Today > returnDate.Date;
+}
+
+<div class="container-fluid mt-4">
+    <div class="mx-auto" style="max-width: 1400px;">
+        <h2 class="fw-bold mb-4 text-center">My Reservations</h2>
+
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center">
+                You don’t have any active reservations yet.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive shadow-sm">
+                <table class="table table-striped table-hover align-middle w-100">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Car</th>
+                            <th>Period</th>
+                            <th>Duration</th>
+                            <th>Total Price</th>
+                            <th>Status</th>
+                            <th style="width: 1%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index = 0;
+                        }
+
+                        @foreach (var r in Model)
+                        {
+                            var overdue = IsOverdue(r.StartDate, r.ReturnDate, r.IsReturned);
+
+                            <tr class="@(overdue ? "table-danger" : "")">
+                                <td>@(++index)</td>
+                                <td>
+                                    <div class="fw-semibold">@r.Car?.Make @r.Car?.Model</div>
+                                    <div class="text-muted small">@r.Car?.Year • @r.Car?.PlateNumber</div>
+                                </td>
+                                <td>
+                                    <div><strong>From:</strong> @r.StartDate.ToShortDateString()</div>
+                                    <div><strong>To:</strong> @r.ReturnDate.ToShortDateString()</div>
+                                </td>
+                                <td>@r.DurationDays day(s)</td>
+                                <td>$@r.TotalPrice</td>
+                                <td>
+                                    @if (overdue)
+                                    {
+                                        <span class="badge bg-danger">Overdue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                </td>
+                                <td>
+                                    <form asp-action="Return" asp-controller="Reservations" method="post" class="m-0">
+                                        <input type="hidden" name="id" value="@r.RentalId" />
+                                        <button type="submit"
+                                                class="btn btn-sm @(r.IsReturned ? "btn-outline-secondary" : "btn-outline-danger")"
+                                                @(r.IsReturned ? "disabled" : "")>
+                                            Return
+                                        </button>
+                                        @Html.AntiForgeryToken()
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

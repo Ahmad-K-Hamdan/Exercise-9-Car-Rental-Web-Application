@@ -1,32 +1,19 @@
-using System.Diagnostics;
-using _9._Car_Rental_Web_Application.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
-namespace _9._Car_Rental_Web_Application.Controllers
+namespace CarRentalWebApplication.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
+        [Authorize]
         public IActionResult Index()
         {
-            return View();
-        }
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction("Index", "AdminCars");
+            }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return RedirectToAction("Index", "Cars");
         }
     }
 }

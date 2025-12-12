@@ -1,0 +1,33 @@
+﻿@{
+    Layout = null;
+}
+@model IEnumerable<CarRentalWebApplication.Models.Car>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="text-center mt-5">
+        <h4 class="text-muted">Sorry, there are no cars available at the moment.</h4>
+        <p>Please check back later or contact support for more information.</p>
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        @foreach (var car in Model)
+        {
+            <div class="col">
+                <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.CarId" class="text-decoration-none text-dark">
+                    <div class="card shadow-sm h-100 border-0">
+                        <img src="@car.ImageUrl" class="card-img-top" alt="@($"{car.Make} {car.Model}")"
+                             style="height: 200px; object-fit: cover;" />
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-semibold">@car.Make @car.Model</h5>
+                            <p class="text-muted mb-1">@car.Year • @car.Color</p>
+                            <p class="fw-bold text-primary mb-3">$@car.DailyRate / day</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+}

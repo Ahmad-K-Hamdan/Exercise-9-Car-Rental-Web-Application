@@ -1,0 +1,65 @@
+﻿@model IEnumerable<CarRentalWebApplication.Models.Rental>
+
+@{
+    ViewData["Title"] = "Manage Reservations";
+    var currentSearch = ViewData["SearchQuery"]?.ToString() ?? "";
+    var currentFilter = ViewData["StatusFilter"]?.ToString() ?? "all";
+}
+
+<div class="container-fluid mt-4">
+    <div class="mx-auto" style="max-width: 1400px;">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h2 class="fw-bold mb-0">Reservation Management</h2>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div class="flex-grow-1" style="max-width: 350px;">
+                <input id="searchBox" type="text" class="form-control"
+                       placeholder="Search reservations..." value="@currentSearch" />
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <select id="statusFilter" class="form-select" style="width: 180px;">
+                    <option value="all" selected="@(currentFilter == "all")">All</option>
+                    <option value="active" selected="@(currentFilter == "active")">Active</option>
+                    <option value="overdue" selected="@(currentFilter == "overdue")">Overdue</option>
+                    <option value="completed" selected="@(currentFilter == "completed")">Completed</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table container for AJAX -->
+        <div id="reservationTableContainer">
+            @await Html.PartialAsync("_ReservationTable", Model)
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateReservations() {
+            const query = $("#searchBox").val();
+            const status = $("#statusFilter").val();
+
+            $.ajax({
+                url: '/AdminReservations',
+                type: 'GET',
+                data: { searchQuery: query, statusFilter: status },
+                success: function (result) {
+                    $("#reservationTableContainer").html(result);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            let timer;
+            $("#searchBox").on("keyup", function () {
+                clearTimeout(timer);
+                timer = setTimeout(updateReservations, 300);
+            });
+
+            $("#statusFilter").on("change", updateReservations);
+        });
+    </script>
+}

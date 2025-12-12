@@ -1,0 +1,75 @@
+﻿@model IEnumerable<CarRentalWebApplication.Models.Rental>
+
+@{
+    ViewData["Title"] = "Booking History";
+}
+
+<div class="container-fluid mt-4">
+    <div class="mx-auto" style="max-width: 1400px;">
+        <h2 class="fw-bold mb-4 text-center">My Booking History</h2>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center">
+                You don’t have any completed reservations yet.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive shadow-sm">
+                <table class="table table-striped table-hover align-middle w-100">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Car</th>
+                            <th>Period</th>
+                            <th>Duration</th>
+                            <th>Total Price</th>
+                            <th>Returned On</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index = 0;
+                        }
+                        @foreach (var r in Model)
+                        {
+                            bool isLate = r.ActualReturnDate.HasValue &&
+                            r.ActualReturnDate.Value.Date > r.ReturnDate.Date;
+
+                            <tr class="@(isLate ? "table-warning" : "")">
+                                <td>@(++index)</td>
+                                <td>
+                                    <div class="fw-semibold">@r.Car?.Make @r.Car?.Model</div>
+                                    <div class="text-muted small">@r.Car?.Year • @r.Car?.PlateNumber</div>
+                                </td>
+                                <td>
+                                    <div><strong>From:</strong> @r.StartDate.ToShortDateString()</div>
+                                    <div><strong>To:</strong> @r.ReturnDate.ToShortDateString()</div>
+                                </td>
+                                <td>@r.DurationDays day(s)</td>
+                                <td>$@r.TotalPrice</td>
+                                <td>
+                                    @(r.ActualReturnDate?.ToShortDateString() ?? "—")
+                                </td>
+                                <td>@r.PaymentType</td>
+                                <td>
+                                    @if (isLate)
+                                    {
+                                        <span class="badge bg-warning text-dark">Returned Late</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">On Time</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

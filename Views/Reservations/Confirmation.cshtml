@@ -1,0 +1,16 @@
+﻿@model CarRentalWebApplication.Models.Rental
+
+<div class="container mt-4 text-center">
+    <h2 class="text-success mb-4">Reservation Confirmed ✅</h2>
+
+    <div class="card shadow p-4 mx-auto" style="max-width: 500px;">
+        <h4>@Model.Car.Make @Model.Car.Model</h4>
+        <p><strong>From:</strong> @Model.StartDate.ToShortDateString()</p>
+        <p><strong>To:</strong> @Model.ReturnDate.ToShortDateString()</p>
+        <p><strong>Duration:</strong> @Model.DurationDays day(s)</p>
+        <p><strong>Total Price:</strong> $@Model.TotalPrice</p>
+        <p><strong>Payment:</strong> @Model.PaymentType</p>
+    </div>
+
+    <a asp-controller="Cars" asp-action="Index" class="btn btn-primary mt-3">Back to Cars</a>
+</div>

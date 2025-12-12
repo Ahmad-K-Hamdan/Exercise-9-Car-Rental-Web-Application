@@ -1,4 +1,4 @@
-namespace _9._Car_Rental_Web_Application.Models
+namespace CarRentalWebApplication.Models
 {
     public class ErrorViewModel
     {
