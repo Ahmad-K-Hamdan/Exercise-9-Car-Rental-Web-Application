@@ -69,14 +69,3 @@ The application supports **role-based access control**, allowing customers to br
    - `Customer`
 
    You can assign the **Admin** role manually in the database or promote a user through the admin panel.
-
----
-
-### 👨‍💻 Author
-**Ahmad Hamdan**  
-Fifth-year Computer Engineering Student — Birzeit University  
-
----
-
-### 📜 License
-This project is open-source and available under the **MIT License**.
